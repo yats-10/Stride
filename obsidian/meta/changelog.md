@@ -10,6 +10,13 @@ This is a human-curated log — not a mirror of `git log`.
 
 ## 2026-08-31
 
+- **Published to GitHub** — `git init` on `main`, first commit `035aec4`, pushed to
+  [yats-10/Stride](https://github.com/yats-10/Stride) (170 files, ~18 MB tracked).
+  Two repo-hygiene fixes went with it: `.claude/settings.local.json` is now in
+  `.gitignore` (it was only excluded by a *global* ignore rule on one machine, and it
+  carries machine-local paths), and the stray `package-lock.json` npm regenerated was
+  removed — **`yarn.lock` is the one committed lockfile**, matching [[tech-stack]].
+
 - **Positioned as a credited editorial concept, ready to publish** — see
   [[decisions-log]] ADR-0017. The project now presents as *Stride, an editorial
   concept designed and built by Yatharth Madaan*, rather than as a real company
