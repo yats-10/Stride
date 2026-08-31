@@ -16,7 +16,10 @@ import { ApiError, handle } from "@/lib/api";
 const contactSchema = z.object({
   name: z.string().min(1).max(100),
   email: z.email(),
-  message: z.string().min(1).max(2000),
+  // The form collects a phone number, not a message body; both stay optional so
+  // the endpoint accepts the form as-is and still takes a message if one is added.
+  phone: z.string().max(40).optional(),
+  message: z.string().max(2000).optional(),
 });
 
 export const POST = handle(async (req) => {

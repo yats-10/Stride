@@ -25,11 +25,17 @@ export const siteConfig = {
   description:
     "Stride — an editorial concept for a modern banking brand. A scroll-driven, spring-animated one-pager with WebGL set pieces, designed and built by Yatharth Madaan.",
   /**
-   * Public origin, no trailing slash. Drives canonical URLs, OG tags, the
-   * sitemap, and JSON-LD. Set `NEXT_PUBLIC_SITE_URL` in production.
+   * Public origin, no trailing slash. Drives `metadataBase` — and through it every
+   * canonical URL, `og:url`, `og:image` and JSON-LD `@id`.
+   *
+   * The fallback is the **production origin, not localhost**: an unset
+   * `NEXT_PUBLIC_SITE_URL` used to ship `http://localhost:3000` into the deployed
+   * page source. Pointing canonical/OG at production from every environment is the
+   * safe default — a dev build emitting production URLs is harmless, the reverse is
+   * not. Still set `NEXT_PUBLIC_SITE_URL` on the host so a custom domain wins.
    */
-  url: publicEnv.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
-  /** Default Open Graph / Twitter share image (path under `public/`, 900×600). */
+  url: publicEnv.NEXT_PUBLIC_SITE_URL ?? "https://stridebanking.vercel.app",
+  /** Default Open Graph / Twitter share image (path under `public/`, 1200×630). */
   ogImage: "/open-graph.png",
   author: "Yatharth Madaan",
   /**

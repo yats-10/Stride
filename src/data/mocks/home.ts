@@ -119,7 +119,6 @@ export const homeContent: HomeContent = {
   },
   works: {
     heading: "Our Portfolio",
-    viewLabel: "View project",
     items: [
       { name: "Northwind", year: "2026", image: "/assets/images/portfolio/1.jpg" },
       { name: "Ledgerly", year: "2025", image: "/assets/images/portfolio/2.jpg" },

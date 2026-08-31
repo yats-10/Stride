@@ -89,3 +89,13 @@ Server Components instead (no client request at all).
 ## Related
 
 [[backend/README]] · [[environment-variables]] · [[routing]] · [[data-flow]] · [[tech-stack]]
+
+## The contact route is wired to the form
+
+`app/api/contact/route.ts` accepts what `views/contact-form.tsx` actually collects:
+`name` + `email` required, `phone` and `message` optional. The form POSTs through
+`apiFetch` (`lib/api-client.ts`) and renders four states — idle / sending / sent /
+error — in a `role="status"` live region; a failed request says so rather than
+swallowing the message. With no `CONTACT_ENDPOINT` set the handler logs server-side,
+and the success copy says plainly that the submission reaches a demo endpoint, not a
+staffed inbox. See [[decisions-log]] ADR-0017.

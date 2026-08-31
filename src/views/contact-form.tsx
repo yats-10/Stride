@@ -3,29 +3,54 @@
 // Contact form — a bold intro prompt, three underlined fields (name + phone on one
 // row, email below) and a centred pill submit. Pinned (`sticky top-0 h-lvh`, z-10)
 // so the site footer slides up over it, the same two-layer reveal the Product uses
-// over the chain (see home.tsx). Client leaf: controlled inputs + a local submit
-// stub (no backend wired yet). Motion stays spring-free — states change instantly.
+// over the chain (see home.tsx). Client leaf: controlled inputs POSTing to the
+// same-origin `/api/contact` route handler via `apiFetch` (never a third-party API
+// from the browser — see obsidian/backend/api-architecture.md). Motion stays
+// spring-free — states change instantly.
 import { useState, type FormEvent } from "react";
 import { AnimatedHeading } from "@/components/common/animated-heading";
+import { apiFetch } from "@/lib/api-client";
 import type { ContactContent } from "@/data/mocks/contact";
 
 export interface ContactFormProps {
   content: ContactContent;
 }
 
+type Status = "idle" | "sending" | "sent" | "error";
+
 export const ContactForm = ({ content }: ContactFormProps) => {
-  const { labelId, heading, fields, cta } = content;
+  const { labelId, heading, fields, cta, status: statusCopy } = content;
   const [values, setValues] = useState({ name: "", phone: "", email: "" });
-  const [sent, setSent] = useState(false);
+  const [status, setStatus] = useState<Status>("idle");
 
   const set = (key: keyof typeof values) => (e: { target: { value: string } }) =>
     setValues((v) => ({ ...v, [key]: e.target.value }));
 
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // No backend yet — acknowledge locally. Wire to /api/contact when available.
-    setSent(true);
+    if (status === "sending") return;
+    setStatus("sending");
+    try {
+      await apiFetch("/api/contact", {
+        method: "POST",
+        body: JSON.stringify(values),
+      });
+      setStatus("sent");
+    } catch {
+      // Surface the failure — a form that swallows a failed send loses the message
+      // silently, which is worse than saying so.
+      setStatus("error");
+    }
   };
+
+  const message =
+    status === "sending"
+      ? statusCopy.sending
+      : status === "sent"
+        ? statusCopy.sent
+        : status === "error"
+          ? statusCopy.error
+          : "";
 
   // A filled field lights its trailing status dot.
   const dot = (filled: boolean) =>
@@ -113,16 +138,19 @@ export const ContactForm = ({ content }: ContactFormProps) => {
         <div className="mt-10 flex flex-col items-center gap-4">
           <button
             type="submit"
-            className="rounded-full bg-black px-6 py-3 text-sm font-medium text-white hover:bg-black/90"
+            disabled={status === "sending"}
+            className="rounded-full bg-black px-6 py-3 text-sm font-medium text-white hover:bg-black/90 disabled:opacity-60"
           >
             {cta}
           </button>
           <p
             role="status"
             aria-live="polite"
-            className="min-h-5 text-sm text-black/60"
+            className={`min-h-5 max-w-md text-center text-sm ${
+              status === "error" ? "text-red-700" : "text-black/60"
+            }`}
           >
-            {sent ? "Thanks — we'll be in touch shortly." : ""}
+            {message}
           </p>
         </div>
       </form>

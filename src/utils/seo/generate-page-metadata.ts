@@ -49,8 +49,10 @@ export function generateMetadata({
       description,
       url,
       siteName,
-      // Dimensions must match the real asset (public/open-graph.png).
-      images: [{ url: ogImage, width: 900, height: 600 }],
+      // Dimensions must match the real asset (public/open-graph.png). 1200×630 is
+      // what LinkedIn, X, Slack, iMessage and Facebook expect; smaller renders as a
+      // small square thumbnail instead of a full-width card.
+      images: [{ url: ogImage, width: 1200, height: 630 }],
       locale: "en_US",
       type: "website",
     },

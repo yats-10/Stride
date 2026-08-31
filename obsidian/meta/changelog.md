@@ -10,6 +10,37 @@ This is a human-curated log — not a mirror of `git log`.
 
 ## 2026-08-31
 
+- **Pre-launch SEO + dead-control pass; deployed to production.**
+  - **Absolute URLs no longer resolve to localhost** (`lib/site.ts`). `metadataBase`
+    was already set from `siteConfig.url` and `alternates.canonical` already existed —
+    the defect was narrower: `siteConfig.url`'s **fallback** was `http://localhost:3000`,
+    so an unset `NEXT_PUBLIC_SITE_URL` shipped localhost into canonical, `og:url`,
+    `og:image` and every JSON-LD `@id`. The fallback is now the production origin, and
+    `NEXT_PUBLIC_SITE_URL` is set on Vercel (Production + Preview).
+  - **The Send button now sends** (`views/contact-form.tsx`, `app/api/contact/route.ts`,
+    `data/mocks/contact.ts`). It had a handler, but the handler only set local state and
+    claimed *"we'll be in touch shortly"* while sending nothing. It now POSTs to the
+    same-origin `/api/contact` route through `apiFetch`, with idle/sending/sent/error
+    states in the existing `role="status"` live region — a failed send says so instead
+    of being swallowed. The route schema was widened to what the form collects (`phone`
+    optional, `message` optional). Success copy is honest: the submission reaches a demo
+    endpoint, not a staffed inbox.
+  - **Removed the dead "View project" control** (`views/works.tsx`, `data/mocks/home.ts`).
+    It was a `<button>` with no handler on fictional portfolio entries. The caption row
+    is now index + name on a `[1fr_auto_1fr]` grid, keeping the name optically centred;
+    the unused `WorksContent.viewLabel` field went with it. **No scroll, spring or
+    Three.js code was touched** — the change is markup only. There are no social icons
+    to audit; those were removed with ADR-0017.
+  - **`open-graph.png` regenerated at 1200×630** (was 900×600 — below the threshold
+    where LinkedIn/X/Slack render a full-width card). It is a 2× Playwright capture of
+    the production hero downscaled to exact size; `generate-page-metadata.ts` declares
+    matching dimensions.
+  - **Deployed** to [stridebanking.vercel.app](https://stridebanking.vercel.app)
+    (project `design-mantra/stride.banking`). Verified on the live page source:
+    canonical, `og:url` and `og:image` all absolute on the Vercel origin, zero
+    `localhost` occurrences, `og:image` serving 200 at 1200×630, all 16 anchors
+    resolving, and `POST /api/contact` returning `{"data":{"received":true}}`.
+
 - **Published to GitHub** — `git init` on `main`, first commit `035aec4`, pushed to
   [yats-10/Stride](https://github.com/yats-10/Stride) (170 files, ~18 MB tracked).
   Two repo-hygiene fixes went with it: `.claude/settings.local.json` is now in

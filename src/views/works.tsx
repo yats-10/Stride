@@ -25,7 +25,6 @@ export interface WorkItem {
 
 export interface WorksContent {
   heading: string;
-  viewLabel: string;
   items: WorkItem[];
 }
 
@@ -68,7 +67,7 @@ const cardFrame = (i: number, v: number) => {
 const scrimOpacity = (i: number, v: number) => Math.min(0.35, Math.abs(i - v) * 0.22);
 
 export const Works = ({ content }: WorksProps) => {
-  const { items, heading, viewLabel } = content;
+  const { items, heading } = content;
   const count = items.length;
   const sectionRef = useRef<HTMLElement>(null);
   const currentRef = useRef(0); // manually-lerped follow value (smooths the scroll read)
@@ -192,23 +191,20 @@ export const Works = ({ content }: WorksProps) => {
           ))}
         </div>
 
-        {/* Metadata row — index left, name centred, view button right */}
-        <div className="pointer-events-none absolute inset-x-4 top-1/2 z-30 grid -translate-y-1/2 grid-cols-[auto_1fr_auto] items-center gap-4 text-sm tracking-wide sm:inset-x-8 sm:gap-6">
+        {/* Metadata row — index left, name centred. There is deliberately no "view
+            project" control: the portfolio entries are fictional set dressing for the
+            concept, and a button that opens nothing reads as broken. The empty third
+            column keeps the name optically centred on the page. */}
+        <div className="pointer-events-none absolute inset-x-4 top-1/2 z-30 grid -translate-y-1/2 grid-cols-[1fr_auto_1fr] items-center gap-4 text-sm tracking-wide sm:inset-x-8 sm:gap-6">
           <span className="justify-self-start tabular-nums text-white/50">
             <span ref={indexElRef}>{pad(1)}</span> / {pad(count)}
           </span>
           <span
             ref={nameElRef}
-            className="justify-self-center truncate text-lg leading-snug tracking-tight text-white sm:text-2xl"
+            className="min-w-0 justify-self-center truncate text-center text-lg leading-snug tracking-tight text-white sm:text-2xl"
           >
             {items[0].name}
           </span>
-          <button
-            type="button"
-            className="pointer-events-auto justify-self-end whitespace-nowrap rounded-full border border-white/25 px-5 py-2.5 text-sm font-medium text-white/80 hover:border-white/60 hover:text-white sm:px-6 sm:py-3"
-          >
-            {viewLabel}
-          </button>
         </div>
       </div>
     </section>

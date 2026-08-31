@@ -14,6 +14,8 @@ export interface ContactContent {
   /** Placeholder / label text for each field. */
   fields: { name: string; phone: string; email: string };
   cta: string;
+  /** Inline submit feedback. `sent` says plainly where a real submission goes. */
+  status: { sending: string; sent: string; error: string };
 }
 
 export const contactContent: ContactContent = {
@@ -22,6 +24,11 @@ export const contactContent: ContactContent = {
     "Stride is always looking to connect with sharp, curious people. Feel free to drop us a line.",
   fields: { name: "Name", phone: "Phone number", email: "Email" },
   cta: "Send",
+  status: {
+    sending: "Sending…",
+    sent: "Thanks — received. Stride is a concept piece, so this reaches a demo endpoint, not a staffed inbox.",
+    error: "That didn't send. Please try again.",
+  },
 };
 
 export interface FooterNavGroup {

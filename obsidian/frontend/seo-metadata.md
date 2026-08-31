@@ -29,8 +29,13 @@ page carries its destination as content, never a hardcoded `href="#"`.
 
 `siteConfig.url` comes from `NEXT_PUBLIC_SITE_URL` (see [[environment-variables]]),
 falling back to `http://localhost:3000`.
-> [!important] `#todo` Set `NEXT_PUBLIC_SITE_URL` to the deployed origin before
-> launch — it drives **every** absolute URL (canonical, OG, JSON-LD `@id`).
+`siteConfig.url` falls back to the **production origin**
+(`https://stridebanking.vercel.app`), *not* localhost. An unset `NEXT_PUBLIC_SITE_URL`
+previously shipped `http://localhost:3000` into `metadataBase` and therefore into every
+canonical, `og:url`, `og:image` and JSON-LD `@id` in the deployed page source. A dev
+build emitting production URLs is harmless; the reverse silently breaks link previews
+and canonical tags. `NEXT_PUBLIC_SITE_URL` is set on Vercel (Production + Preview) so a
+custom domain can override it without a code change.
 
 ## Metadata generator
 
@@ -103,10 +108,11 @@ the three `ms-icon-*.png` tiles it pointed at were never in `public/`.)
 Site **content** assets (images, videos) go under `public/assets/<section>/` —
 see [[folder-structure]].
 
-> [!note] `#todo`
-> `open-graph.png` is currently **900×600** (the metadata declares the same, so
-> there is no mismatch). The ideal OG size is **1200×630** — swap in a
-> correctly-sized asset and update the dimensions in `generate-page-metadata.ts`.
+`open-graph.png` is **1200×630** — the size LinkedIn, X, Slack, iMessage and
+Facebook render as a full-width card (below it they fall back to a small square
+thumbnail). It is a 2× capture of the production hero, downscaled to exactly 1200×630;
+regenerate it the same way after any hero change. `generate-page-metadata.ts` declares
+matching `width`/`height`.
 
 ## Related
 
