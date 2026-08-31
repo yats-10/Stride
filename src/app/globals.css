@@ -1,0 +1,157 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+
+  /* Home hero — full-bleed WebGL backdrop (see src/views/plasma-burst.tsx and the
+     `hero-gradient` utility below, kept only as a no-WebGL fallback). Kept explicit
+     (not tied to --background) so it holds regardless of scheme. */
+  --hero-base: #04070f; /* near-black base */
+  --hero-stage: #1246e2; /* blue (fallback gradient + WebGL base tint) */
+  --hero-glow: #2ad4ff; /* cyan side glows (fallback) */
+  --hero-page: #ffffff; /* white shown in the gap when the hero shrinks into a card */
+
+  /* Logo marquee — one flat light-grey for every logo. */
+  --logo: #c6ccd6;
+
+  /* About heading — inline icon-chip accents. */
+  --accent-blue: #2e9bff;
+  --accent-lime: #b6f13a;
+  --muted: #9aa1ad; /* de-emphasised heading words */
+
+  /* Stats bento cards. */
+  --card-blue: #2f7cf6;
+  --card-gray: #ededf0;
+  --card-dark: #0a0c12;
+
+  /* Product explainer bento (purple). */
+  --plum: #241c3a; /* deep purple — dark cards, button, headings */
+  --lilac: #d7d1f2; /* light lavender card */
+  --paper: #f5f4f8; /* section background */
+
+  /* Site footer — blue "mesh gradient" (WebGL) with a chrome heart; slides over
+     the contact form. --footer is the solid no-WebGL fallback behind the shader. */
+  --footer: #0a1533; /* dark navy fallback behind the gradient */
+  --footer-fg: #f2f4f1; /* near-white primary text */
+  --footer-muted: #aeb9d8; /* de-emphasised labels / secondary text (cool) */
+
+  /* Preloader progress bar — pale blue → royal blue, left→right. */
+  --preloader-from: #d7e0ff; /* pale blue (bar left / wipe start) */
+  --preloader-to: #1b34e8; /* deep royal blue (bar right / wipe end) */
+}
+
+@theme inline {
+  /* Page gutter — 120px inset from the screen edges for wide sections. */
+  --spacing-page-gutter: 120px;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-mulish);
+
+  --color-hero-page: var(--hero-page);
+  --color-logo: var(--logo);
+  --color-accent-blue: var(--accent-blue);
+  --color-accent-lime: var(--accent-lime);
+  --color-muted: var(--muted);
+  --color-card-blue: var(--card-blue);
+  --color-card-gray: var(--card-gray);
+  --color-card-dark: var(--card-dark);
+  --color-plum: var(--plum);
+  --color-lilac: var(--lilac);
+  --color-paper: var(--paper);
+  --color-preloader-from: var(--preloader-from);
+  --color-preloader-to: var(--preloader-to);
+  --color-footer: var(--footer);
+  --color-footer-fg: var(--footer-fg);
+  --color-footer-muted: var(--footer-muted);
+}
+
+/* Full-bleed symmetric hero backdrop: two cyan glows rising from the bottom
+   corners into a blue bottom-centre pool, fading to a dark valley up the middle. */
+@utility hero-gradient {
+  background-color: var(--hero-base);
+  background-image:
+    radial-gradient(48% 82% at 0% 70%, var(--hero-glow), transparent 60%),
+    radial-gradient(48% 82% at 100% 70%, var(--hero-glow), transparent 60%),
+    radial-gradient(92% 70% at 50% 118%, var(--hero-stage), transparent 72%);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  min-height: 100vh;
+  /* Mulish (next/font/local) — the --font-mulish var is set on <body>. */
+  font-family: var(--font-mulish), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Lenis smooth scroll — official integration CSS (see src/layouts/scroll-layout.tsx).
+   Not spring motion: Lenis just interpolates the window's scroll position, so the whole
+   page (and every scroll-driven effect) glides. These rules let it measure content and
+   stop native scroll-behavior from fighting the interpolation. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+@layer base {
+  /* Adaptive scaling grid — scales the root font-size with the viewport so a
+     rem-based layout stays proportional. Each breakpoint divides FONT_BASE
+     (16px) by the design base width its range was laid out at:
+       font-size: 16 * 100 / baseWidth  (vw)
+     Above 1440px (the Figma design base) the AdaptiveGrid component takes over
+     (proportional scale-up).
+     Keep in sync with src/components/common/grid/grid.config.ts. */
+  html {
+    font-size: 16px;
+  }
+
+  @media (max-width: 1440px) {
+    html {
+      font-size: 1.111111vw; /* 16 * 100 / 1440 */
+    }
+  }
+
+  @media (max-width: 1024px) {
+    html {
+      font-size: 1.5625vw; /* 16 * 100 / 1024 */
+    }
+  }
+
+  /* Phones/small tablets. The old `4.444vw` (base 360) kept scaling up across the
+     whole 0–640 range, so by ~620px the root ballooned to ~28px and every heading,
+     stat and card overflowed. Clamp it: a readable 12px floor, continuous with the
+     1024 tier at the 640 boundary (which resolves to ~10px), never larger than 16px. */
+  @media (max-width: 640px) {
+    html {
+      font-size: clamp(12px, 1.5625vw, 16px);
+    }
+  }
+}
+
+@layer utilities {
+}
+
+@layer components {
+}
